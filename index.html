@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background-color: #ddd;
+            border: 2px solid ;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px grey;
+            padding: 30px;
+            text-align: center;
+            max-width: 75%;
+            margin: 30px auto;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input[type="password"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .password-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .password-box input[type="text"] {
+          /*  border: none;*/
+            border: 1px solid #ccc;
+            padding-right: 40px;
+            border-radius: 5;
+            margin-bottom: 0;
+        }
+        
+
+        .copy-button {
+            background-color: #008CBA;
+            border-radius: 5px;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .copy-button:hover {
+            background-color: #005f6b;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .strength-indicator {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        #check{
+          background-color: orange;
+        }
+        #strenght-meter{
+          font-size: 10px
+        }
+
+        /* Media query for smaller screens */
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 100%;
+                
+            }
+            h1{
+              font-size: 18px;
+            }
+            #check{
+              font-size: 15px;
+              padding: 5px 5px;
+              
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Password strenght  & Generator</h1>
+        <div class="button-group">
+            <button onclick="checkPasswordStrength()" id="check">Check Strength</button>
+            <button onclick="generatePassword()">Generate</button>
+            <button class="copy-button" onclick="copyPassword()">Copy</button>
+        </div>
+        <div class="password-box">
+            <input type="text" id="password" placeholder="Type your password">
+        </div>
+        <div id="strength-meter"></div>
+        <div class="strength-indicator" id="strength-indicator"></div>
+    </div>
+
+    <script>
+        function generatePassword() {
+            const length = 12;
+            const uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const lowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
+            const numbers = "0123456789";
+            const symbols = "!@#$%&";
+            let password = "";
+
+            // Ensure at least one character from each group
+            password += uppercaseLetters[Math.floor(Math.random() * uppercaseLetters.length)];
+            password += lowercaseLetters[Math.floor(Math.random() * lowercaseLetters.length)];
+            password += numbers[Math.floor(Math.random() * numbers.length)];
+            password += symbols[Math.floor(Math.random() * symbols.length)];
+
+            // Fill the rest of the password with random characters from all groups
+            for (let i = 0; i < length - 4; i++) {
+                const charset = uppercaseLetters + lowercaseLetters + numbers + symbols;
+                password += charset[Math.floor(Math.random() * charset.length)];
+            }
+
+            // Shuffle the password characters
+            password = password.split('').sort(function(){return 0.5-Math.random()}).join('');
+
+            document.getElementById("password").value = password;
+            checkPasswordStrength();
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthMeter = document.getElementById('strength-meter');
+            const strengthIndicator = document.getElementById('strength-indicator');
+
+            let strength = 0;
+
+            if (password.length >= 8) {
+                strength++;
+            }
+            if (/[A-Z]/.test(password)) {
+                strength++;
+            }
+            if (/[a-z]/.test(password)) {
+                strength++;
+            }
+            if (/\d/.test(password)) {
+                strength++;
+            }
+            if (/[!@#$%&]/.test(password)) {
+                strength++;
+            }
+
+            let strengthText = '';
+            if (strength < 3) {
+                strengthText = 'Weak';
+                strengthMeter.style.color = 'red';
+            } else if (strength < 5) {
+                strengthText = 'Moderate';
+                strengthMeter.style.color = 'orange';
+            } else {
+                strengthText = 'Strong';
+                strengthMeter.style.color = 'green';
+            }
+            strengthMeter.innerText = `Password Strength: ${strengthText}`;
+            strengthIndicator.innerText = `Strength Indicator: ${strength}/5`;
+        }
+
+        function copyPassword() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.select();
+            document.execCommand('copy');
+        }
+    </script>
+</body>
+</html>
