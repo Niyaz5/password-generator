@@ -77,6 +77,30 @@
             background-color: #005f6b;
         }
 
+        .clear-history-button {
+            background-color: transparent;
+            color: rgb(255, 0, 0);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            
+            float: right;
+            text-decoration: underline;
+            margin-top: 15px;
+            margin-right: -15px;
+            transition: font-size .5s;
+            font-size: 14px;
+            text-wrap: nowrap;
+        }
+
+        .clear-history-button:hover {
+            background-color: transparent;
+            font-size: 14.2px;
+            
+            
+        }
+
         .button-group {
             display: flex;
             justify-content: center;
@@ -99,10 +123,15 @@
         .history {
             margin-top: 20px;
             text-align: left;
+            position: relative;
+        }
+
+        .history h3 {
+            display: inline-block;
         }
 
         .history-item {
-            background-color: #f4f4f4;
+            background-color: #c3c3c3;
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
@@ -154,7 +183,10 @@
         </div>
         <div id="strength-meter"></div>
         <div class="strength-indicator" id="strength-indicator"></div>
-        <div class="history" id="history"></div>
+        <div class="history" id="history">
+            <h3>Password History</h3>
+            <button class="clear-history-button" onclick="clearHistory()">Clear History</button>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
@@ -253,7 +285,10 @@
         function displayHistory() {
             let history = JSON.parse(localStorage.getItem(userIP)) || [];
             let historyDiv = document.getElementById('history');
-            historyDiv.innerHTML = "<h3>Password History</h3>";
+            historyDiv.innerHTML = `
+                <h3>Password History</h3>
+                <button class="clear-history-button" onclick="clearHistory()">Clear History</button>
+            `;
 
             history.forEach((password, index) => {
                 let historyItem = document.createElement('div');
@@ -280,6 +315,13 @@
             document.execCommand('copy');
             document.body.removeChild(tempInput);
         }
+
+        function clearHistory() {
+            if (confirm("Do you want to clear all saved passwords in history?")) {
+                localStorage.removeItem(userIP);
+                displayHistory();
+            }
+        }
     </script>
 </body>
-</html>
+</html
