@@ -12,7 +12,7 @@
 
         .container {
             background-color: #ddd;
-            border: 2px solid ;
+            border: 2px solid;
             border-radius: 10px;
             box-shadow: 0px 0px 10px grey;
             padding: 30px;
@@ -57,13 +57,11 @@
         }
 
         .password-box input[type="text"] {
-          /*  border: none;*/
             border: 1px solid #ccc;
             padding-right: 40px;
             border-radius: 5;
             margin-bottom: 0;
         }
-        
 
         .copy-button {
             background-color: #008CBA;
@@ -89,33 +87,63 @@
             font-weight: bold;
             margin-top: 10px;
         }
-        #check{
-          background-color: orange;
+
+        #check {
+            background-color: orange;
         }
-        #strenght-meter{
-          font-size: 10px
+
+        #strength-meter {
+            font-size: 10px;
+        }
+
+        .history {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .history-item {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item button {
+            background-color: #008CBA;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .history-item button:hover {
+            background-color: #005f6b;
         }
 
         /* Media query for smaller screens */
         @media screen and (max-width: 600px) {
             .container {
                 width: 100%;
-                
             }
-            h1{
-              font-size: 18px;
+
+            h1 {
+                font-size: 18px;
             }
-            #check{
-              font-size: 15px;
-              padding: 5px 5px;
-              
+
+            #check {
+                font-size: 15px;
+                padding: 5px 5px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Password strenght  & Generator</h1>
+        <h1>Password Strength & Generator</h1>
         <div class="button-group">
             <button onclick="checkPasswordStrength()" id="check">Check Strength</button>
             <button onclick="generatePassword()">Generate</button>
@@ -126,9 +154,19 @@
         </div>
         <div id="strength-meter"></div>
         <div class="strength-indicator" id="strength-indicator"></div>
+        <div class="history" id="history"></div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
+    <script src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
     <script>
+        let userIP = "";
+
+        function getIP(json) {
+            userIP = json.ip;
+            loadHistory();
+        }
+
         function generatePassword() {
             const length = 12;
             const uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -150,10 +188,11 @@
             }
 
             // Shuffle the password characters
-            password = password.split('').sort(function(){return 0.5-Math.random()}).join('');
+            password = password.split('').sort(function() { return 0.5 - Math.random() }).join('');
 
             document.getElementById("password").value = password;
             checkPasswordStrength();
+            saveToHistory(password);
         }
 
         function checkPasswordStrength() {
@@ -198,6 +237,48 @@
             const passwordInput = document.getElementById('password');
             passwordInput.select();
             document.execCommand('copy');
+        }
+
+        function saveToHistory(password) {
+            let history = JSON.parse(localStorage.getItem(userIP)) || [];
+            history.unshift(password); // Add the new password to the beginning of the array
+            localStorage.setItem(userIP, JSON.stringify(history));
+            displayHistory();
+        }
+
+        function loadHistory() {
+            displayHistory();
+        }
+
+        function displayHistory() {
+            let history = JSON.parse(localStorage.getItem(userIP)) || [];
+            let historyDiv = document.getElementById('history');
+            historyDiv.innerHTML = "<h3>Password History</h3>";
+
+            history.forEach((password, index) => {
+                let historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+
+                let passwordText = document.createElement('span');
+                passwordText.textContent = password;
+
+                let copyButton = document.createElement('button');
+                copyButton.textContent = 'Copy';
+                copyButton.onclick = () => copyToClipboard(password);
+
+                historyItem.appendChild(passwordText);
+                historyItem.appendChild(copyButton);
+                historyDiv.appendChild(historyItem);
+            });
+        }
+
+        function copyToClipboard(password) {
+            const tempInput = document.createElement('input');
+            document.body.appendChild(tempInput);
+            tempInput.value = password;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
         }
     </script>
 </body>
