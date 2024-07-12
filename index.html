@@ -5,7 +5,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #b1afaf;
             margin: 0;
             padding: 0;
         }
@@ -16,7 +16,7 @@
             border-radius: 10px;
             box-shadow: 0px 0px 10px grey;
             padding: 30px;
-            text-align: center;
+            
             max-width: 75%;
             margin: 30px auto;
         }
@@ -24,6 +24,7 @@
         h1 {
             color: #333;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         input[type="password"], input[type="text"] {
@@ -39,7 +40,7 @@
         button {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
+            padding: 10px 100px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -84,7 +85,6 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            
             float: right;
             text-decoration: underline;
             margin-top: 15px;
@@ -97,8 +97,6 @@
         .clear-history-button:hover {
             background-color: transparent;
             font-size: 14.2px;
-            
-            
         }
 
         .button-group {
@@ -110,6 +108,7 @@
         .strength-indicator {
             font-weight: bold;
             margin-top: 10px;
+            text-align: center;
         }
 
         #check {
@@ -117,7 +116,8 @@
         }
 
         #strength-meter {
-            font-size: 10px;
+            font-size: 14px;
+            text-align: center;
         }
 
         .history {
@@ -133,16 +133,35 @@
         .history-item {
             background-color: #c3c3c3;
             padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
+            border-radius: 10px;
+            margin-bottom: 5px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+        }
+
+        .history-item .password-text {
+            flex: 1;
+        }
+
+        .history-item .nickname, .history-item .nickname-button {
+            margin-right: 10px;
+        }
+
+        .history-item input[type="text"] {
+            width: auto;
+            padding: 5px;
+            margin-right: 10px;
+            border: 1px solid #adadad;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+            margin-top: 20px;
         }
 
         .history-item button {
             background-color: #008CBA;
-            padding: 5px 10px;
+            padding: 5px 15px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -168,10 +187,12 @@
                 padding: 5px 5px;
             }
         }
+        
     </style>
 </head>
 <body>
     <div class="container">
+        
         <h1>Password Strength & Generator</h1>
         <div class="button-group">
             <button onclick="checkPasswordStrength()" id="check">Check Strength</button>
@@ -187,6 +208,7 @@
             <h3>Password History</h3>
             <button class="clear-history-button" onclick="clearHistory()">Clear History</button>
         </div>
+        <!-- <a href="https://github.com/Niyaz5"><h4>Niyaz</h4></a> -->
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
@@ -273,7 +295,7 @@
 
         function saveToHistory(password) {
             let history = JSON.parse(localStorage.getItem(userIP)) || [];
-            history.unshift(password); // Add the new password to the beginning of the array
+            history.unshift({ password, nickname: '' }); // Add the new password with an empty nickname to the beginning of the array
             localStorage.setItem(userIP, JSON.stringify(history));
             displayHistory();
         }
@@ -290,21 +312,52 @@
                 <button class="clear-history-button" onclick="clearHistory()">Clear History</button>
             `;
 
-            history.forEach((password, index) => {
+            history.forEach((entry, index) => {
                 let historyItem = document.createElement('div');
                 historyItem.className = 'history-item';
 
                 let passwordText = document.createElement('span');
-                passwordText.textContent = password;
+                passwordText.className = 'password-text';
+                passwordText.textContent = entry.password;
+
+                let nicknameField = document.createElement('input');
+                nicknameField.className = 'nickname';
+                nicknameField.type = 'text';
+                nicknameField.placeholder = 'Enter Nickname';
+                nicknameField.value = entry.nickname;
+                nicknameField.disabled = !!entry.nickname; // Disable the field if nickname is already set
+
+                let nicknameButton = document.createElement('button');
+                nicknameButton.className = 'nickname-button';
+                nicknameButton.textContent = entry.nickname ? 'Set' : ' Set ';
+                nicknameButton.onclick = () => setNickname(index, nicknameField.value);
+
+                if (entry.nickname) {
+                    nicknameField.value = entry.nickname;
+                    nicknameButton.disabled = true;
+                }
 
                 let copyButton = document.createElement('button');
                 copyButton.textContent = 'Copy';
-                copyButton.onclick = () => copyToClipboard(password);
+                copyButton.onclick = () => copyToClipboard(entry.password);
 
                 historyItem.appendChild(passwordText);
+                historyItem.appendChild(nicknameField);
+                if (!entry.nickname) { // Only append the button if the nickname is not set
+                    historyItem.appendChild(nicknameButton);
+                }
                 historyItem.appendChild(copyButton);
                 historyDiv.appendChild(historyItem);
             });
+        }
+
+        function setNickname(index, nickname) {
+            if (nickname.trim()) {
+                let history = JSON.parse(localStorage.getItem(userIP)) || [];
+                history[index].nickname = nickname;
+                localStorage.setItem(userIP, JSON.stringify(history));
+                displayHistory();
+            }
         }
 
         function copyToClipboard(password) {
@@ -324,4 +377,4 @@
         }
     </script>
 </body>
-</html
+</html>
