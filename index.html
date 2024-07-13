@@ -16,7 +16,6 @@
             border-radius: 10px;
             box-shadow: 0px 0px 10px grey;
             padding: 30px;
-            
             max-width: 75%;
             margin: 30px auto;
         }
@@ -190,9 +189,8 @@
         
     </style>
 </head>
-<body>
+<body onload="loadHistory()">
     <div class="container">
-        
         <h1>Password Strength & Generator</h1>
         <div class="button-group">
             <button onclick="checkPasswordStrength()" id="check">Check Strength</button>
@@ -208,7 +206,6 @@
             <h3>Password History</h3>
             <button class="clear-history-button" onclick="clearHistory()">Clear History</button>
         </div>
-        <!-- <a href="https://github.com/Niyaz5"><h4>Niyaz</h4></a> -->
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
