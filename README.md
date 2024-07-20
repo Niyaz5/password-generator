@@ -18,3 +18,6 @@ Welcome to the Password Strength & Generator Tool! This web application is desig
 **Tech Stack!**
 *Frontend:* HTML, CSS, JavaScript
 *Local Storage:* Utilizes localStorage to persist password history based on the user's IP address.
+
+
+**NOTE**:only save passwords for temporary not too long!
